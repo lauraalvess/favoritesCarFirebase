@@ -51,4 +51,16 @@ class TodoModel {
       criadoEm: criadoEm ?? this.criadoEm,
     );
   }
+
+  factory TodoModel.fromFirestore(
+    DocumentSnapshot<Map<String, dynamic>> snapshot,
+    SnapshotOptions? options,
+  ) {
+    final data = snapshot.data();
+    return TodoModel(
+        id: data!['id'],
+        nome: data['nome'],
+        status: data['status'],
+        criadoEm: data['criadoEm']);
+  }
 }

@@ -1,4 +1,3 @@
-import 'package:firebasewebexample/main.dart';
 import 'package:firebasewebexample/view/cart_page.dart';
 import 'package:firebasewebexample/view/favorites_page.dart';
 import 'package:firebasewebexample/view/generator_page.dart';

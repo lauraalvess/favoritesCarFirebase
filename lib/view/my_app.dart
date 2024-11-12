@@ -1,5 +1,6 @@
 import 'package:firebasewebexample/view/controller/my_app_state.dart';
 import 'package:firebasewebexample/view/favorites_page.dart';
+import 'package:firebasewebexample/view/help_page.dart';
 import 'package:firebasewebexample/view/my_homepage_state.dart';
 import 'package:firebasewebexample/view/todo_form_page.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,8 @@ class MyApp extends StatelessWidget {
   static const HOME = '/';
   static const TODOS_FORM = 'todos-form';
   static const TODOS_LIST = 'todos-list';
+
+  static const TODOS_EDIT = 'help-page';
   //static const LOGIN = 'login';
 
   @override
@@ -29,6 +32,7 @@ class MyApp extends StatelessWidget {
           HOME: (context) => MyHomePage(),
           TODOS_FORM: (context) => TodoFormPage(),
           TODOS_LIST: (context) => FavoritePage(),
+          TODOS_EDIT: (context) => HelpPage(),
         },
       ),
     );

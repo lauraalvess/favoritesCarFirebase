@@ -1,38 +1,49 @@
 import 'package:firebasewebexample/model/todo_model.dart';
 import 'package:firebasewebexample/service/firestore_service.dart';
+import 'package:firebasewebexample/view/my_app.dart';
+import 'package:firebasewebexample/view/my_homepage_state.dart';
 import 'package:flutter/material.dart';
 
 class TodoFormPage extends StatefulWidget {
-  TodoFormPage({super.key});
+  const TodoFormPage({super.key});
 
   @override
   State<TodoFormPage> createState() => _TodoFormPageState();
 }
 
 class _TodoFormPageState extends State<TodoFormPage> {
-  var _controller = TextEditingController();
+  final _controller = TextEditingController();
 
   late bool _firstInitiate = false;
 
   late TodoModel? t = TodoModel();
 
+  var label = "";
+
   @override
   void initState() {
     super.initState();
-    _firstInitiate = false;
+    _firstInitiate = true;
     print("Dentro do initState ");
   }
 
   @override
   Widget build(BuildContext context) {
     //recuperar id do contexto
-    if (_firstInitiate) {
+    if (ModalRoute.of(context)!.settings.arguments != null) {
       t = ModalRoute.of(context)?.settings.arguments as TodoModel;
 
-      _firstInitiate = false;
-      //print("Nome de seleçao editado: " + t!.nome);
-      //preencher os dados do formulario camposcontroller
-      _controller.text = t!.nome ?? "";
+      if (t == null) {
+        print('todomodel nulo');
+      } else {
+        _controller.text = t!.nome ?? "";
+      }
+    }
+
+    void _updateLabelText() {
+      setState(() {
+        label = "Salvo com sucesso!";
+      });
     }
 
     //var appState = context.watch<MyAppState>();
@@ -43,6 +54,7 @@ class _TodoFormPageState extends State<TodoFormPage> {
         ),
         debugShowCheckedModeBanner: false,
         home: Scaffold(
+          //drawer: MyHomePage(),
           body: ListView(
             children: <Widget>[
               Center(
@@ -63,26 +75,30 @@ class _TodoFormPageState extends State<TodoFormPage> {
               const SizedBox(height: 15.0),
               ElevatedButton(
                 onPressed: () {
-                  //print("Dentro do botao " + t.nome + t.id!);
-                  var tDao = FirestoreService();
-                  var id = t!.id;
-                  if (id == null) {
-                    var t = TodoModel(
-                        status: true,
-                        nome: _controller.text,
-                        criadoEm: DateTime.now());
-
-                    tDao.addTodo(t);
-                  } else {
-                    var t = TodoModel(
-                        status: true,
-                        nome: _controller.text,
-                        criadoEm: DateTime.now());
-
-                    tDao.updateTodo(t.id!, t);
+                  try {
+                    var tDao = FirestoreService();
+                    var idR = t!.id;
+                    if (idR == null) {
+                      t = TodoModel(
+                          status: true,
+                          nome: _controller.text,
+                          criadoEm: DateTime.now());
+                      print("entrou no botao salvar");
+                      tDao.addTodo(t!);
+                    } else {
+                      t = TodoModel(
+                          id: idR,
+                          status: true,
+                          nome: _controller.text,
+                          criadoEm: DateTime.now());
+                      print("entrou no botao alterar "); // + t!.id!);
+                      tDao.edit(t!);
+                    }
+                  } catch (ex) {
+                    throw Exception(ex);
                   }
-
                   _controller.clear();
+                  _updateLabelText();
                 },
                 child: const Text('Enviar'),
               ),
@@ -91,7 +107,23 @@ class _TodoFormPageState extends State<TodoFormPage> {
                   _controller.clear();
                 },
                 child: const Text('Limpar'),
-              )
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, MyApp.TODOS_EDIT);
+                },
+                child: const Text('Listar'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Fechar'),
+              ),
+              const SizedBox(height: 15.0),
+              Text(
+                label,
+              ),
             ],
           ),
         ));

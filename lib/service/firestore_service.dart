@@ -81,4 +81,25 @@ class FirestoreService {
       throw Exception(e.message);
     }
   }
+
+  Future<bool> edit(TodoModel todoModel) async {
+    try {
+      final snapshot = firestore.collection('todos').doc(todoModel.id);
+      await snapshot.delete();
+
+      await firestore
+          .collection('todos')
+          .withConverter(
+            fromFirestore: TodoModel.fromFirestore,
+            toFirestore: (value, options) => todoModel.toMap(),
+          )
+          .doc(todoModel.id)
+          .set(todoModel);
+    } catch (e) {
+      return false;
+    } finally {
+      await Future.delayed(const Duration(milliseconds: 700));
+    }
+    return true;
+  }
 }
